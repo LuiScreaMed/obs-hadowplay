@@ -38,7 +38,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/plugin-platform-helpers.c src/p
                                              src/plugin-macos.c src/plugin-main.c)
 
 if(OS_WINDOWS)
-  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE version)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE version runtimeobject)
+  file(GLOB windows_SRC src/windows/*)
+  target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${windows_SRC})
 endif()
 
 set_target_properties_plugin(${CMAKE_PROJECT_NAME} PROPERTIES OUTPUT_NAME ${_name})
