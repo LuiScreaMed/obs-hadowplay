@@ -34,11 +34,14 @@ if(ENABLE_QT)
                AUTORCC ON)
 endif()
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE src/plugin-platform-helpers.c src/plugin-windows.c src/plugin-linux.c
-                                             src/plugin-macos.c src/plugin-main.c)
+file(GLOB shared_SRC src/*.c src/*.h src/*.cpp)
+
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${shared_SRC})
 
 if(OS_WINDOWS)
-  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE version runtimeobject)
+  add_subdirectory(3rdParty/WinToast-1.3.0)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE WinToast )
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE version runtimeobject Kernel32)
   file(GLOB windows_SRC src/windows/*)
   target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${windows_SRC})
 endif()

@@ -29,6 +29,10 @@
             "debugSymbols": {
                 "windows-x64": "fd8ecd1d8cd2ef049d9f4d7fb5c134f784836d6020758094855dfa98bd025036"
             }
+        },
+        "WinToast": {
+            "version": "1.0.3",
+            "baseUrl": "https://github.com/mohabouje/WinToast/releases/tag"
         }
     },
     "platformConfig": {

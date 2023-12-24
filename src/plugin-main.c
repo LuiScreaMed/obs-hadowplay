@@ -60,6 +60,8 @@ bool obs_hadowplay_manual_stop = false;
 bool obs_hadowplay_module_loaded = false;
 
 extern bool obs_hadowplay_get_fullscreen_window_name(struct dstr *process_name);
+extern bool obs_hadowplay_spawn_saved_notif();
+extern bool obs_hadowplay_os_init();
 
 pthread_t update_thread;
 struct dstr replay_target_name = {0};
@@ -320,6 +322,11 @@ void obs_hadowplay_frontend_event_callback(enum obs_frontend_event event,
 
 bool obs_module_load(void)
 {
+	obs_log(LOG_INFO, "Attempting to initialise popups");
+	if (obs_hadowplay_os_init() == false) {
+		obs_log(LOG_ERROR, "FAILED to popup");
+	}
+
 	// No need to be atomic since the thread hasn't started yet.
 	obs_hadowplay_module_loaded = true;
 
