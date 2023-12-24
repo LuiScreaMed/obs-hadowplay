@@ -39,7 +39,7 @@ file(GLOB shared_SRC src/*.c src/*.h src/*.cpp)
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${shared_SRC})
 
 if(OS_WINDOWS)
-  add_subdirectory(3rdParty/WinToast-1.3.0)
+  add_subdirectory(3rdParty/WinToast)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE WinToast )
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE version runtimeobject Kernel32)
   file(GLOB windows_SRC src/windows/*)

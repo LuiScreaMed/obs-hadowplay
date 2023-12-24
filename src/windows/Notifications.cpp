@@ -1,3 +1,5 @@
+// See: https://github.com/mohabouje/WinToast
+
 #include "Notifications.h"
 #include "plugin-support.h"
 #include "wintoastlib.h"
