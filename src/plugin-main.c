@@ -60,8 +60,9 @@ bool obs_hadowplay_manual_stop = false;
 bool obs_hadowplay_module_loaded = false;
 
 extern bool obs_hadowplay_get_fullscreen_window_name(struct dstr *process_name);
-extern bool obs_hadowplay_spawn_saved_notif();
+extern bool obs_hadowplay_spawn_saved_notif(wchar_t *filepath);
 extern bool obs_hadowplay_os_init();
+extern bool obs_hadowplay_os_uninit();
 
 pthread_t update_thread;
 struct dstr replay_target_name = {0};
@@ -189,6 +190,10 @@ void obs_hadowplay_move_output_file(struct dstr *original_filepath,
 	obs_log(LOG_INFO, "Renaming files: %s -> %s", original_filepath->array,
 		new_filepath.array);
 	os_rename(original_filepath->array, new_filepath.array);
+
+	wchar_t *w_new_filepath = dstr_to_wcs(&new_filepath);
+	obs_hadowplay_spawn_saved_notif(w_new_filepath);
+	bfree(w_new_filepath);
 
 	dstr_free(&replay_filename);
 	dstr_free(&file_dir);
@@ -350,6 +355,11 @@ void obs_module_unload()
 		obs_log(LOG_INFO, "Update thread closed");
 	} else {
 		obs_log(LOG_ERROR, "Failed to join update thread: %d", result);
+	}
+
+	if (obs_hadowplay_os_uninit() == false) {
+		obs_log(LOG_ERROR,
+			"Failed to uninitialise os specific components");
 	}
 
 	obs_log(LOG_INFO, "plugin unloaded");
