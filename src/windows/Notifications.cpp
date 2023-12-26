@@ -36,6 +36,8 @@ std::wstring obs_hadowplay_char_to_wchar(const char *input)
 	return wc;
 }
 
+WinToast *obs_hadowplay_toast_inst = nullptr;
+
 bool obs_hadowplay_windows_show_saved_notif(wchar_t *filepath)
 {
 	std::wstring w_filepath = filepath;
@@ -45,19 +47,20 @@ bool obs_hadowplay_windows_show_saved_notif(wchar_t *filepath)
 	templ.setTextField(L"Recording organised", WinToastTemplate::FirstLine);
 	templ.setTextField(w_filepath, WinToastTemplate::SecondLine);
 
-	return WinToast::instance()->showToast(templ, handler);
+	return obs_hadowplay_toast_inst->showToast(templ, handler);
 }
 
 extern bool obs_hadowplay_init_notifications()
 {
-	WinToast::instance()->setAppName(L"OBS Studio");
+	obs_hadowplay_toast_inst = new WinToast();
+	obs_hadowplay_toast_inst->setAppName(L"OBS Studio");
 
 	const auto aumi = WinToast::configureAUMI(
 		L"ez64cool", L"obs", L"hadowplay",
 		obs_hadowplay_char_to_wchar(PLUGIN_VERSION));
-	WinToast::instance()->setAppUserModelId(aumi);
+	obs_hadowplay_toast_inst->setAppUserModelId(aumi);
 
-	if (!WinToast::instance()->initialize()) {
+	if (!obs_hadowplay_toast_inst->initialize()) {
 		return false;
 	}
 
@@ -66,7 +69,8 @@ extern bool obs_hadowplay_init_notifications()
 
 extern bool obs_hadowplay_uninit_notifications()
 {
-	delete WinToast::instance();
+	delete obs_hadowplay_toast_inst;
+	obs_hadowplay_toast_inst = nullptr;
 
 	return true;
 }
