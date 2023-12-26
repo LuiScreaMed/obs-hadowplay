@@ -3,8 +3,11 @@
 #include "Notifications.h"
 #include <util/base.h>
 #include <util/dstr.h>
+#include <obs-module.h>
 #include "plugin-support.h"
 #include "wintoastlib.h"
+
+#pragma comment(lib, "Winmm.lib")
 
 using namespace WinToastLib;
 
@@ -46,6 +49,18 @@ bool obs_hadowplay_windows_show_saved_notif(wchar_t *filepath)
 	WinToastTemplate templ = WinToastTemplate(WinToastTemplate::Text02);
 	templ.setTextField(L"Recording organised", WinToastTemplate::FirstLine);
 	templ.setTextField(w_filepath, WinToastTemplate::SecondLine);
+	templ.setAudioOption(WinToastTemplate::Silent);
+
+	char *notif_filepath = obs_module_file("notification.wav");
+
+	if (notif_filepath != nullptr) {
+		PlaySoundA(notif_filepath, NULL, SND_FILENAME | SND_ASYNC);
+	} else {
+		PlaySound((LPWSTR)SND_ALIAS_SYSTEMDEFAULT, NULL,
+			  SND_ALIAS_ID | SND_ASYNC);
+	}
+
+	bfree(notif_filepath);
 
 	return obs_hadowplay_toast_inst->showToast(templ, handler);
 }
