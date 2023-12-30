@@ -250,7 +250,7 @@ extern bool obs_hadowplay_get_fullscreen_window_name(struct dstr *process_name)
 	return !EnumWindows(win_enum_windows, (LPARAM)process_name);
 }
 
-#include "Windows/Notifications.h"
+#include "Windows/Notifications.hpp"
 
 extern bool obs_hadowplay_spawn_saved_notif(wchar_t *filepath)
 {

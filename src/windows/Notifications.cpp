@@ -1,6 +1,6 @@
 // See: https://github.com/mohabouje/WinToast
 
-#include "Notifications.h"
+#include "Notifications.hpp"
 #include <util/base.h>
 #include <util/dstr.h>
 #include <obs-module.h>
