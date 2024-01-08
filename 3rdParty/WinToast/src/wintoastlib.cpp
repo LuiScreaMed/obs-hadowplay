@@ -237,7 +237,7 @@ namespace Util {
     inline HRESULT defaultShellLinkPath(_In_ std::wstring const& appname, _In_ WCHAR* path, _In_ DWORD nSize = MAX_PATH) {
         HRESULT hr = defaultShellLinksDirectory(path, nSize);
         if (SUCCEEDED(hr)) {
-            const std::wstring appLink(appname + DEFAULT_LINK_FORMAT);
+            std::wstring const appLink(appname + DEFAULT_LINK_FORMAT);
             errno_t result = wcscat_s(path, nSize, appLink.c_str());
             hr             = (result == 0) ? S_OK : E_INVALIDARG;
             DEBUG_MSG("Default shell link file path: " << path);
@@ -274,7 +274,7 @@ namespace Util {
         return hr;
     }
 
-    template<typename FunctorT>
+    template <typename FunctorT>
     inline HRESULT setEventHandlers(_In_ IToastNotification* notification, _In_ std::shared_ptr<IWinToastHandler> eventHandler,
                                     _In_ INT64 expirationTime, _Out_ EventRegistrationToken& activatedToken,
                                     _Out_ EventRegistrationToken& dismissedToken, _Out_ EventRegistrationToken& failedToken,
@@ -450,7 +450,7 @@ std::wstring WinToast::configureAUMI(_In_ std::wstring const& companyName, _In_ 
 }
 
 std::wstring const& WinToast::strerror(WinToastError error) {
-    static const std::unordered_map<WinToastError, std::wstring> Labels = {
+    static std::unordered_map<WinToastError, std::wstring> const Labels = {
         {WinToastError::NoError,               L"No error. The process was executed correctly"                                  },
         {WinToastError::NotInitialized,        L"The library has not been initialized"                                          },
         {WinToastError::SystemNotSupported,    L"The OS does not support WinToast"                                              },
@@ -607,6 +607,10 @@ HRESULT WinToast::validateShellLinkHelper(_Out_ bool& wasChanged) {
     return hr;
 }
 
+void ParentDirectory(PWCHAR path) {
+    (*wcsrchr(path, '\\')) = '\0';
+}
+
 HRESULT WinToast::createShellLinkHelper() {
     if (_shortcutPolicy != SHORTCUT_POLICY_REQUIRE_CREATE) {
         return E_FAIL;
@@ -616,6 +620,9 @@ HRESULT WinToast::createShellLinkHelper() {
     WCHAR slPath[MAX_PATH]{L'\0'};
     Util::defaultShellLinkPath(_appName, slPath);
     Util::defaultExecutablePath(exePath);
+    WCHAR wdPath[MAX_PATH]{L'\0'};
+    wcscpy(wdPath, exePath);
+    ParentDirectory(wdPath);
     ComPtr<IShellLinkW> shellLink;
     HRESULT hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shellLink));
     if (SUCCEEDED(hr)) {
@@ -623,7 +630,7 @@ HRESULT WinToast::createShellLinkHelper() {
         if (SUCCEEDED(hr)) {
             hr = shellLink->SetArguments(L"");
             if (SUCCEEDED(hr)) {
-                hr = shellLink->SetWorkingDirectory(exePath);
+                hr = shellLink->SetWorkingDirectory(wdPath);
                 if (SUCCEEDED(hr)) {
                     ComPtr<IPropertyStore> propertyStore;
                     hr = shellLink.As(&propertyStore);
@@ -822,7 +829,7 @@ bool WinToast::hideToast(_In_ INT64 id) {
     }
 
     auto& notifyData = iter->second;
-    auto result = notify->Hide(notifyData.notification());
+    auto result      = notify->Hide(notifyData.notification());
     if (FAILED(result)) {
         DEBUG_MSG("Error when hiding the toast. Error code: " << result);
         return false;
@@ -1197,7 +1204,7 @@ void WinToastTemplate::setAudioPath(_In_ std::wstring const& audioPath) {
 }
 
 void WinToastTemplate::setAudioPath(_In_ AudioSystemFile file) {
-    static const std::unordered_map<AudioSystemFile, std::wstring> Files = {
+    static std::unordered_map<AudioSystemFile, std::wstring> const Files = {
         {AudioSystemFile::DefaultSound, L"ms-winsoundevent:Notification.Default"        },
         {AudioSystemFile::IM,           L"ms-winsoundevent:Notification.IM"             },
         {AudioSystemFile::Mail,         L"ms-winsoundevent:Notification.Mail"           },
