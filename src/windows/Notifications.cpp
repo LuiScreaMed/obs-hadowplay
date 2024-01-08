@@ -55,9 +55,6 @@ bool obs_hadowplay_windows_show_saved_notif(wchar_t *filepath)
 
 	if (notif_filepath != nullptr) {
 		PlaySoundA(notif_filepath, NULL, SND_FILENAME | SND_ASYNC);
-	} else {
-		PlaySound((LPWSTR)SND_ALIAS_SYSTEMDEFAULT, NULL,
-			  SND_ALIAS_ID | SND_ASYNC);
 	}
 
 	bfree(notif_filepath);
